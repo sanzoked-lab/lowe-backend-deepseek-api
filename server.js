@@ -30,8 +30,17 @@ async function callDeepSeek(content) {
     body: JSON.stringify({ model: MODEL, messages: [{ role: "user", content }] })
   });
   const data = await res.json();
+  if (data.error) {
+    console.error("DeepSeek API error:", JSON.stringify(data.error));
+    throw new Error(data.error.message || JSON.stringify(data.error));
+  }
   const text = data?.choices?.[0]?.message?.content || "";
-  return JSON.parse(text.replace(/```json|```/g, "").trim());
+  try {
+    return JSON.parse(text.replace(/```json|```/g, "").trim());
+  } catch (e) {
+    console.error("Could not parse model output as JSON. Raw text:", text);
+    throw new Error("Model did not return valid JSON: " + text.slice(0, 200));
+  }
 }
 
 app.post("/translate", async (req, res) => {
@@ -49,7 +58,7 @@ app.post("/translate", async (req, res) => {
       res.json(data);
     }
   } catch (e) {
-    res.status(500).json({ error: "translation_failed" });
+    res.status(500).json({ error: "translation_failed", detail: e.message });
   }
 });
 
@@ -61,7 +70,7 @@ app.post("/draft", async (req, res) => {
     );
     res.json(data);
   } catch (e) {
-    res.status(500).json({ error: "draft_failed" });
+    res.status(500).json({ error: "draft_failed", detail: e.message });
   }
 });
 
@@ -77,9 +86,12 @@ app.post("/translate-image", async (req, res) => {
     ]);
     res.json(data);
   } catch (e) {
-    res.status(500).json({ error: "image_translation_failed" });
+    res.status(500).json({ error: "image_translation_failed", detail: e.message });
   }
 });
 
+app.get("/", (req, res) => res.send("Lowe backend (DeepSeek) is running."));
+
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Lowe backend proxy (DeepSeek) running on port ${PORT}`));
+
