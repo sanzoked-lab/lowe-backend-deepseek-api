@@ -17,7 +17,7 @@ app.use(cors());
 app.use(express.json({ limit: "10mb" }));
 
 const API_KEY = process.env.DEEPSEEK_API_KEY;
-const MODEL = "deepseek-flash";
+const MODEL = "deepseek-v4-flash";
 const ENDPOINT = "https://api.deepseek.com/chat/completions";
 
 async function callDeepSeek(content) {
