@@ -19,6 +19,33 @@ app.use(express.json({ limit: "10mb" }));
 const API_KEY = process.env.DEEPSEEK_API_KEY;
 const MODEL = "deepseek-v4-flash";
 const ENDPOINT = "https://api.deepseek.com/chat/completions";
+const SCHOOL_NAME = "Hunan Institute of Technology (湖南工学院)";
+
+// ---- Knowledge base ----
+// Each entry is a real, verified piece of official information, with a
+// source you can point to. Never add invented/unverified content here —
+// the whole point of this feature is that everything is traceable.
+// Add more entries as you collect verified notices, FAQ text, or
+// screenshots (the existing photo-translate feature is a natural way to
+// capture a physical/scanned notice into text you can paste in here).
+const KNOWLEDGE_BASE = [
+  {
+    title: "2026-2027 Academic Year Awards & Honors — Application Categories",
+    source: "Student Work Service Platform (学生工作服务平台), 评奖评优申请 section, viewed by a student September 2026",
+    content: `The 2026-2027 academic year Awards & Honors (评先评优) application window is from August 22, 2026 00:00 to September 15, 2026 23:59. The available award/honor categories listed on the platform are: National Defense Education Scholarship (国防教育奖学金) 1st/2nd/3rd class, Outstanding Entrepreneurial Student (优秀创业大学生), Outstanding Student (优秀学生), Outstanding Student Role Model (优秀学生标兵), Outstanding Student Cadre (优秀学生干部), Outstanding Student Cadre Role Model (优秀学生干部标兵), and Outstanding Student Scholarship (优秀学生奖学金) 1st/2nd/3rd class. Students apply by logging into the Student Work Service Platform, going to 评奖评优 → 评奖评优申请, and clicking Apply (申请) next to the relevant category.`
+  },
+  {
+    title: "Student Work Service Platform — Login",
+    source: "Student Work Service Platform homepage, viewed by a student September 2026",
+    content: `The Student Work Service Platform is accessed at https://xg.hnit.edu.cn/index. Students log in with their student ID and password (initial password provided in enrollment materials). A "Retrieve Password" (找回密码) option is available on the login page.`
+  }
+];
+
+function knowledgeBaseAsText() {
+  return KNOWLEDGE_BASE.map(
+    (doc, i) => `[Source ${i + 1}: "${doc.title}" — ${doc.source}]\n${doc.content}`
+  ).join("\n\n");
+}
 
 async function callDeepSeek(content) {
   const res = await fetch(ENDPOINT, {
@@ -90,8 +117,33 @@ app.post("/translate-image", async (req, res) => {
   }
 });
 
+app.post("/ask", async (req, res) => {
+  const { question, myLanguage } = req.body;
+  try {
+    const data = await callDeepSeek(
+      `You are Lowe, the official school information assistant for ${SCHOOL_NAME}. You help international students with accurate, source-grounded information.
+
+STRICT RULES:
+1. Only use facts from the OFFICIAL SOURCES below. Never invent, guess, or fill in dates, numbers, names, or requirements that are not explicitly present in the sources.
+2. If the answer is not clearly contained in the sources, set "found" to false and use this exact answer (translated naturally into ${myLanguage}): "According to the official website, this information has not yet been released. I'll let you know as soon as it is."
+3. If you do find the answer, set "found" to true, answer clearly and helpfully in ${myLanguage}, and list which source(s) you used by their exact title.
+4. Preserve official Chinese names/terms in parentheses on first mention where it helps avoid ambiguity (e.g., "Outstanding Student Scholarship (优秀学生奖学金)").
+5. Never mix invented information with real information — if only part of the question is answerable from the sources, answer only that part and say the rest is not yet available.
+
+OFFICIAL SOURCES:
+${knowledgeBaseAsText()}
+
+STUDENT QUESTION: """${question}"""
+
+Respond ONLY with valid JSON, no markdown fences: {"answer": "...", "citations": ["exact source title", "..."], "found": true|false}`
+    );
+    res.json(data);
+  } catch (e) {
+    res.status(500).json({ error: "ask_failed", detail: e.message });
+  }
+});
+
 app.get("/", (req, res) => res.send("Lowe backend (DeepSeek) is running."));
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Lowe backend proxy (DeepSeek) running on port ${PORT}`));
-
