@@ -38,6 +38,26 @@ const KNOWLEDGE_BASE = [
     title: "Student Work Service Platform — Login",
     source: "Student Work Service Platform homepage, viewed by a student September 2026",
     content: `The Student Work Service Platform is accessed at https://xg.hnit.edu.cn/index. Students log in with their student ID and password (initial password provided in enrollment materials). A "Retrieve Password" (找回密码) option is available on the login page.`
+  },
+  {
+    title: "HNIT Overview — International Cooperation",
+    source: "hnit.edu.cn/hnit/About_HNIT/HNIT_Overview.htm (official English-language site), fetched September 2026",
+    content: `Hunan Institute of Technology (HNIT) has obtained qualification from China's Ministry of Education to enroll foreign students. Since 2014, HNIT has run a Sino-foreign joint education program in Electrical Engineering and Automation in cooperation with the University of Sunderland, UK. HNIT has cooperative relations with more than 30 universities and colleges across over 10 countries, including the United States, Britain, Germany, France, Japan, South Korea, and Malaysia. HNIT has approximately 19,919 full-time students and more than 1,200 teaching and administrative staff.`
+  },
+  {
+    title: "HNIT General Contact Information",
+    source: "hnit.edu.cn official site footer (Chinese and English versions), fetched September 2026",
+    content: `Address: No. 18, Henghua Road, Zhuhui District, Hengyang, Hunan Province, China. Postal code: 421002. General email: nic@hnit.edu.cn.`
+  },
+  {
+    title: "Scholarship for Overseas Students — current publication status",
+    source: "hnit.edu.cn/hnit/Admission/Schloarship_for_Overseas_Students.htm (official English-language site), checked September 2026",
+    content: `As of the last check (September 2026), HNIT's official English-language "Scholarship for Overseas Students" page had zero published entries ("total 0"). No specific overseas-student scholarship details, amounts, or deadlines have been published on this page yet.`
+  },
+  {
+    title: "2026 Mid-Autumn Festival and National Day Holiday Notice",
+    source: "hnit.edu.cn notice board (通知公告), \"关于2026年中秋节、国庆节放假的通知\", published 2026-09-14",
+    content: `Mid-Autumn Festival holiday: September 25 (Friday) through September 27 (Sunday), 2026 — 3 days off, adjusted. September 20 (Sunday) is a normal working/class day to make up for it. (National Day holiday details for early October continue in the same notice but were truncated in the excerpt available — verify exact National Day dates directly on the notice board before relying on them.)`
   }
 ];
 
